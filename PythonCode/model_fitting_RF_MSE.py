@@ -32,7 +32,7 @@ def clean_data():
                  i-th participant, j-th query, and k-th repetition
              <2> queryOrder --> the only order we clean data and generate model predictions
     """
-    all_data = glob.glob('../Experiment 2/PrEstExp_811_111418_122039.csv') # data directory
+    all_data = glob.glob('../Experiment 2/*.csv') # data directory
     numPar = len(all_data) # total no. of participants
     print(numPar,' participants were considered!')
     print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++')
@@ -149,41 +149,41 @@ def MSE_RF(params):
 ## Comment Chris: function that goes through all participants and finds the best fit for them
 def init_fit_RF():
     """
-    initialize model fitting practice for Relative Frequency (RF) model
+    initialize model fitting practice for Relative Frequency model
     """
     global testdata
     print(np.shape(pData))
     bnds = [(0.0, 100), (0.0, 100), (0.0, 100), (0.0, 100),
-            (0.0, 100), (0.0, 100), (0.0, 100), (0.0, 100) ]
-
-
+            (0.0, 100), (0.0, 100), (0.0, 100), (0.0, 100)]
+    totBIC_RF = 0
     for ipar in range(84):  # loop through participants
-
         minMSE, n_data, BIC = 0, 0, 0
-        n_para = 6  # effective number of parameters: [a,b,c]*2
-        testdata = pData[ipar,:,:]
+        n_params = 3  # effective number of parameters: [a, b, c]
+        testdata = pData[ipar, :, :]
         fit_all_data = differential_evolution(MSE_RF, bounds=bnds,
                                               popsize=30,
                                               disp=False, polish=fmin, tol=1e-5)
         print(fit_all_data.x, fit_all_data.fun)
 
         minMSE = fit_all_data.fun
-        n_data = 40*3
+        n_data = 40 * 3
 
         allpredmeans, _ = generativeModel_RF(fit_all_data.x)
 
-        ### Comment Chris: once you are at the relevant part of the assignment, replace the "=0" with a call to your function that calculates the BIC
-        BIC = 0
-        # totBIC += BIC
+        BIC = calculate_BIC(n_data, n_params, minMSE)
+        totBIC_RF += BIC
 
-        print('BIC score of Sampling model:', BIC)
+        print('BIC score of Relative Frequency model:', BIC)
+
         # model 1,2 = Bayesian sampling (1:one sample size, 2:two sample sizes)
         # model 3   = Sampling/RF
-        saved_location = '../fit_results/part_'+str(ipar)+'_model_3.pkl'
+        saved_location = '../fit_results/part_' + str(ipar) + '_model_RF.pkl'
         with open(saved_location, 'wb') as f:
-            pickle.dump({'fitResults':fit_all_data,
+            pickle.dump({'fitResults': fit_all_data,
                          'predmean': allpredmeans,
-                         'bic':BIC}, f)
+                         'bic': BIC}, f)
+
+    print('total BIC RF:', totBIC_RF)
 
 
 ################################
