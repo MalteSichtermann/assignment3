@@ -32,7 +32,7 @@ def clean_data():
                  i-th participant, j-th query, and k-th repetition
              <2> queryOrder --> the only order we clean data and generate model predictions
     """
-    all_data = glob.glob('all_data/*.csv') # data directory
+    all_data = glob.glob('../Experiment 2/PrEstExp_811_111418_122039.csv') # data directory
     numPar = len(all_data) # total no. of participants
     print(numPar,' participants were considered!')
     print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++')
@@ -174,12 +174,12 @@ def init_fit_RF():
 
         ### Comment Chris: once you are at the relevant part of the assignment, replace the "=0" with a call to your function that calculates the BIC
         BIC = 0
-        totBIC += BIC
+        # totBIC += BIC
 
         print('BIC score of Sampling model:', BIC)
         # model 1,2 = Bayesian sampling (1:one sample size, 2:two sample sizes)
         # model 3   = Sampling/RF
-        saved_location = 'fit_results/part_'+str(ipar)+'_model_3.pkl'
+        saved_location = '../fit_results/part_'+str(ipar)+'_model_3.pkl'
         with open(saved_location, 'wb') as f:
             pickle.dump({'fitResults':fit_all_data,
                          'predmean': allpredmeans,
